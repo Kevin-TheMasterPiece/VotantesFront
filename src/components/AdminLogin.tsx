@@ -1,13 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { setAuthToken } from "../services/api";
-import axios from "axios";
+import axios from "axios"; 
 
-export default function AdminLogin({ onLogin }: { onLogin?: () => void }) {
+export default function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const navigate = useNavigate();
 
   async function login() {
     setErr(null);
@@ -26,7 +28,7 @@ export default function AdminLogin({ onLogin }: { onLogin?: () => void }) {
 
       setShowSuccess(true);
       setTimeout(() => {
-        onLogin?.();
+        navigate("/dashboard");
       }, 2000);
     } catch (error: any) {
       const errorMsg = error?.response?.data?.detail || error?.response?.data?.error || "Error en login";

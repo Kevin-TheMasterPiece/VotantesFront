@@ -26,7 +26,7 @@ export default function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route
               path="/login"
-              element={<AdminLogin onLogin={() => (window.location.href = "/dashboard")} />}
+              element={<AdminLogin />}
             />
           </Routes>
         </main>
