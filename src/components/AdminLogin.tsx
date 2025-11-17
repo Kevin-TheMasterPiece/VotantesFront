@@ -14,7 +14,7 @@ export default function AdminLogin({ onLogin }: { onLogin?: () => void }) {
     setLoading(true);
     
     try {
-      const baseURL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      const baseURL = import.meta.env.VITE_API_URL || "https://votantesapi.onrender.com";
       const response = await axios.post(`${baseURL}/api/votantes/login/`, {
         username,
         password,

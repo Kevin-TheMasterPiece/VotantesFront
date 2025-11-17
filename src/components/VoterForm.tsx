@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./VoterForm.css";
+import { api } from "../services/api";
 
 // Tipos - AHORA CON TODOS LOS CAMPOS
 interface VotantePayload {
@@ -84,20 +85,9 @@ export default function VoterForm() {
         setError(null);
         
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/votantes/predict/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(form),
-            });
+            const response = await api.post("/api/votantes/predict/", form);
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Error: ${response.status}`);
-            }
-
-            const data = await response.json();
+            const data = response.data;
             console.log("Respuesta del servidor:", data);
 
             // No mostrar la predicción al encuestado. Mostrar modal de agradecimiento.
@@ -105,7 +95,7 @@ export default function VoterForm() {
             
         } catch (err: any) {
             console.error("Error en la predicción:", err);
-            setError(err.message || "Error al procesar la predicción");
+            setError(err.response?.data?.error || err.message || "Error al procesar la predicción");
         } finally {
             setLoading(false);
         }
