@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { setAuthToken } from "../services/api";
-import axios from "axios"; 
+import { setAuthToken, api } from "../services/api"; 
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("");
@@ -16,8 +15,7 @@ export default function AdminLogin() {
     setLoading(true);
     
     try {
-      const baseURL = import.meta.env.VITE_API_URL || "https://votantesapi.onrender.com";
-      const response = await axios.post(`${baseURL}/api/votantes/login/`, {
+      const response = await api.post("/api/votantes/login/", {
         username,
         password,
       });
