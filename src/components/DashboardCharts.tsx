@@ -2,6 +2,12 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pi
 
 const COLORS = ["#667eea", "#764ba2", "#f093fb", "#4facfe", "#00f2fe", "#43e97b", "#fa709a", "#fee140"];
 
+// Mapeo de géneros
+const GENDER_MAP: { [key: number]: string } = {
+  0: "Femenino",
+  1: "Masculino",
+};
+
 export default function DashboardCharts({ votosPorCandidato, distribucionGenero }: any) {
   // Ordenar candidatos por total descendente
   const candidatosOrdenados = [...(votosPorCandidato || [])].sort((a, b) => (b.total || 0) - (a.total || 0));
@@ -9,6 +15,12 @@ export default function DashboardCharts({ votosPorCandidato, distribucionGenero 
   // Encontrar candidato con más votos
   const candidatoGanador = candidatosOrdenados[0];
   const totalVotos = candidatosOrdenados.reduce((sum, c) => sum + (c.total || 0), 0);
+
+  // Transformar datos de género para mostrar nombres en lugar de números
+  const distribucionGeneroTransformada = (distribucionGenero || []).map((item: any) => ({
+    ...item,
+    genero_nombre: GENDER_MAP[item.genero] || `Género ${item.genero}`,
+  }));
 
   return (
     <div className="charts-container">
@@ -70,14 +82,13 @@ export default function DashboardCharts({ votosPorCandidato, distribucionGenero 
             <ResponsiveContainer height={300} width="100%">
               <PieChart>
                 <Pie
-                  data={distribucionGenero}
+                  data={distribucionGeneroTransformada}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
                   label={(props: any) => {
-                    // Recharts passes label props where entry is in props.payload
                     const payload = props.payload || props;
-                    const name = payload.genero ?? payload.gender ?? payload.label ?? payload.name ?? payload.tipo ?? payload.key ?? 'N/A';
+                    const name = payload.genero_nombre || GENDER_MAP[payload.genero] || "N/A";
                     const value = payload.total ?? payload.value ?? props.value ?? 0;
                     return `${name}: ${value}`;
                   }}
@@ -85,7 +96,7 @@ export default function DashboardCharts({ votosPorCandidato, distribucionGenero 
                   fill="#667eea"
                   dataKey="total"
                 >
-                  {distribucionGenero.map((_: any, index: number) => (
+                  {distribucionGeneroTransformada.map((_: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>

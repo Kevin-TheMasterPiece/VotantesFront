@@ -15,7 +15,7 @@ export default function App() {
               Encuesta
             </NavLink>
             <NavLink to="/login" className={({ isActive }) => (isActive ? "active" : "")}>
-              Login Admin
+              Login
             </NavLink>
           </nav>
         </header>
