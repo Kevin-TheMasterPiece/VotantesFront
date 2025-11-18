@@ -8,6 +8,28 @@ const GENDER_MAP: { [key: number]: string } = {
   1: "Masculino",
 };
 
+// Resuelve el nombre de género desde distintas posibles claves y formatos
+function resolveGenderName(item: any) {
+  if (!item) return "Desconocido";
+
+  // posibles campos donde el backend puede poner el código/nombre
+  const candidates = ["genero", "gender", "label", "name", "tipo", "key", "value", "_id"];
+  for (const k of candidates) {
+    if (item[k] !== undefined && item[k] !== null) {
+      const v = item[k];
+      // si es número o string que representa número, mapearlo
+      const n = typeof v === "string" && /^\d+$/.test(v) ? parseInt(v, 10) : typeof v === "number" ? v : null;
+      if (n !== null && GENDER_MAP[n]) return GENDER_MAP[n];
+      // si ya es una etiqueta legible
+      if (typeof v === "string" && v.trim().length > 0) return v;
+      // últimas opciones
+      return String(v);
+    }
+  }
+
+  return "Desconocido";
+}
+
 export default function DashboardCharts({ votosPorCandidato, distribucionGenero }: any) {
   // Ordenar candidatos por total descendente
   const candidatosOrdenados = [...(votosPorCandidato || [])].sort((a, b) => (b.total || 0) - (a.total || 0));
@@ -19,7 +41,7 @@ export default function DashboardCharts({ votosPorCandidato, distribucionGenero 
   // Transformar datos de género para mostrar nombres en lugar de números
   const distribucionGeneroTransformada = (distribucionGenero || []).map((item: any) => ({
     ...item,
-    genero_nombre: GENDER_MAP[item.genero] || `Género ${item.genero}`,
+    genero_nombre: resolveGenderName(item),
   }));
 
   return (
@@ -88,7 +110,7 @@ export default function DashboardCharts({ votosPorCandidato, distribucionGenero 
                   labelLine={false}
                   label={(props: any) => {
                     const payload = props.payload || props;
-                    const name = payload.genero_nombre || GENDER_MAP[payload.genero] || "N/A";
+                    const name = payload.genero_nombre || resolveGenderName(payload) || "N/A";
                     const value = payload.total ?? payload.value ?? props.value ?? 0;
                     return `${name}: ${value}`;
                   }}
